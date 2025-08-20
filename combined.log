@@ -1,0 +1,77 @@
+23:13:00  error: register:17 validation result
+23:23:05  error: register:17 validation result
+23:23:05  error: user already present
+23:23:19  error: register:17 validation result
+23:25:13  error: register:17 validation result
+23:29:03  error: register:17 validation result
+23:30:12  error: register:17 validation result
+23:30:12  error: user already present
+23:31:34  error: register:17 validation result
+23:31:34  error: user already present
+23:32:14  error: register:17 validation result
+23:32:30  error: register:17 validation result
+23:32:56  error: register:17 validation result
+23:34:15  error: register:17 validation result
+23:34:30  error: register:17 validation result
+23:34:57  error: register:17 validation result
+23:35:13  error: register:17 validation result
+23:35:32  error: register:17 validation result
+23:35:53  error: register:17 validation result
+23:36:45  error: register:17 validation result
+23:36:49  error: register:17 validation result
+23:36:49  error: user already present
+15:54:02  error: invalid token
+17:39:54  error: register:17 validation result
+17:39:54  error: role is not allowed
+17:44:00  error: register:17 validation result
+17:44:00  error: user already present
+17:46:21  error: register:17 validation result
+11:09:28  error: Invalid phone number or password
+11:12:31  error: Invalid phone number or password
+17:16:25  error: jwt malformed
+17:28:04  error: jwt malformed
+17:29:08  error: jwt malformed
+17:29:14  error: jwt malformed
+17:32:43  error: jwt malformed
+17:35:14  error: jwt malformed
+21:22:17  error: jwt malformed
+21:23:30  error: jwt malformed
+21:36:17  error: jwt malformed
+21:36:51  error: jwt malformed
+21:36:52  error: jwt malformed
+21:41:24  error: jwt malformed
+21:46:00  error: jwt malformed
+21:50:20  error: jwt malformed
+21:50:20  error: jwt malformed
+21:51:26  error: jwt malformed
+21:52:30  error: jwt malformed
+21:52:31  error: jwt malformed
+22:18:14  error: jwt malformed
+22:18:15  error: jwt malformed
+22:30:58  error: jwt malformed
+23:01:39  error: jwt malformed
+23:03:02  error: jwt malformed
+23:20:50  error: jwt malformed
+23:22:53  error: jwt malformed
+21:37:06  error: jwt malformed
+21:37:18  error: jwt malformed
+23:06:41  error: jwt malformed
+23:06:58  error: jwt malformed
+23:09:46  error: jwt malformed
+23:11:55  error: jwt malformed
+23:13:39  error: jwt malformed
+23:14:52  error: jwt malformed
+23:16:21  error: jwt malformed
+23:17:17  error: jwt malformed
+23:18:12  error: jwt malformed
+23:20:06  error: jwt malformed
+14:45:12  error: name are required
+16:50:09  error: invalid group
+13:42:28  error: Name,storeId,ownerId,categoryId are required
+13:43:32  error: Name,storeId,ownerId,categoryId are required
+13:43:33  error: Name,storeId,ownerId,categoryId are required
+13:43:34  error: Name,storeId,ownerId,categoryId are required
+13:43:34  error: Name,storeId,ownerId,categoryId are required
+13:43:34  error: Name,storeId,ownerId,categoryId are required
+13:43:34  error: Name,storeId,ownerId,categoryId are required
+13:43:34  error: Name,storeId,ownerId,categoryId are required
