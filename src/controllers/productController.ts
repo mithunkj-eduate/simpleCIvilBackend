@@ -6,6 +6,8 @@ import Store from "../models/storeModel";
 import Category from "../models/categoryModel";
 import Product from "../models/productModel";
 import { ProductInput } from "../types/product";
+import { AuthRequest } from "../helpers/verifyjwt";
+import Order from "../models/orderModel";
 
 export const createProduct = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -53,9 +55,7 @@ export const createProduct = asyncErrorHandler(
         coordinates: [latitude, longitude],
       },
     });
-    res.status(200).json({
-      message: "created successfully",
-    });
+    res.status(201).json({ data: product });
   }
 );
 
@@ -99,7 +99,7 @@ export const getProducts1 = asyncErrorHandler(
 // get products with filter
 // /api/products?categoryId=66abc12345&type=SALE&color=Blue&sort=Price: Low to High&lat=12.9716&lng=77.5946
 
-export const getProducts = asyncErrorHandler(
+export const getProducts2 = asyncErrorHandler(
   async (req: Request, res: Response) => {
     try {
       const {
@@ -160,15 +160,125 @@ export const getProducts = asyncErrorHandler(
           sortQuery["saleTerms.salePrice"] = -1;
           break;
       }
-console.log("filter",filterQuery)
-      const products = await Product.find(filterQuery).sort(sortQuery).populate(
-        "storeId ownerId categoryId",
-        "name"
-      );
+
+      const products = await Product.find(filterQuery)
+        .sort(sortQuery)
+        .populate("storeId ownerId categoryId", "name");
 
       const totalCount = await Product.find(filterQuery)
         .sort(sortQuery)
         .countDocuments();
+
+      res.status(200).json({
+        data: products,
+        totalCount,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server Error" });
+    }
+  }
+);
+
+export const getProducts = asyncErrorHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const {
+        categoryId,
+        storeId,
+        type,
+        color,
+        size,
+        minPrice,
+        maxPrice,
+        rating,
+        lat,
+        lng,
+        sort,
+        tags,
+      } = req.query;
+
+      let filterQuery: any = {};
+
+      if (categoryId) {
+        filterQuery.categoryId = { $in: (categoryId as string).split(",") };
+      }
+      if (storeId) {
+        filterQuery.storeId = { $in: (storeId as string).split(",") };
+      }
+      if (type) {
+        filterQuery.type = type;
+      }
+      if (color) {
+        filterQuery.color = { $in: (color as string).split(",") };
+      }
+      if (size) {
+        filterQuery.size = { $in: (size as string).split(",") };
+      }
+      if (tags) {
+        filterQuery.tags = { $in: (tags as string).split(",") };
+      }
+      if (rating) {
+        filterQuery.rating = { $gte: Number(rating) };
+      }
+      if (minPrice || maxPrice) {
+        filterQuery.$or = [
+          {
+            "saleTerms.salePrice": {
+              ...(minPrice && { $gte: Number(minPrice) }),
+              ...(maxPrice && { $lte: Number(maxPrice) }),
+            },
+          },
+          {
+            "rentalTerms.pricePerUnit": {
+              ...(minPrice && { $gte: Number(minPrice) }),
+              ...(maxPrice && { $lte: Number(maxPrice) }),
+            },
+          },
+        ];
+      }
+
+      // Location filter (within 50 km)
+      if (lat && lng) {
+        filterQuery.location = {
+          $geoWithin: {
+            $centerSphere: [[Number(lng), Number(lat)], 50 / 6378.1],
+          },
+        };
+      }
+
+      if (req.query.avilablity === "true") {
+        filterQuery.avilablity = true;
+      }
+
+      // Sorting logic
+      let sortQuery: any = {};
+      switch (sort) {
+        case "mostPopular":
+          sortQuery.rating = -1;
+          break;
+        case "bestRating":
+          sortQuery.rating = -1;
+          break;
+        case "newest":
+          sortQuery.createdAt = -1;
+          break;
+        case "priceLowToHigh":
+          sortQuery["saleTerms.salePrice"] = 1;
+          sortQuery["rentalTerms.pricePerUnit"] = 1;
+          break;
+        case "priceHighToLow":
+          sortQuery["saleTerms.salePrice"] = -1;
+          sortQuery["rentalTerms.pricePerUnit"] = -1;
+          break;
+      }
+
+
+      const products = await Product.find(filterQuery)
+        .sort(sortQuery)
+        .populate("storeId ownerId categoryId", "name");
+
+      const totalCount = await Product.countDocuments(filterQuery);
 
       res.status(200).json({
         data: products,
@@ -201,8 +311,60 @@ export const updateProduct = asyncErrorHandler(
 // get product by id
 export const getProductById = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
-    res.status(200).json({ data: product });
+    // const product = await Product.findById(req.params.id);
+    // if (!product) return res.status(404).json({ message: "Product not found" });
+    // res.status(200).json({ data: product });
+
+    const productId = req.params.id;
+
+    if (!productId) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+
+    const product = await Product.findById(productId)
+      .populate("storeId", "name address")
+      .populate("ownerId", "name email")
+      .populate("categoryId", "name");
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Product retrieved successfully", data: product });
+  }
+);
+
+// GET Method
+// /api/products/similar/:productId
+// Mock similar products endpoint
+export const getSimilarProducts = asyncErrorHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { productId } = req.params;
+    if (!productId) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+
+    const product = await Order.findOne({ productId: productId }).populate(
+      "productId"
+    );
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const similarProducts = await Product.find({
+      categoryId: product.productId.categoryId,
+      // color: product.productId.color,
+      tags: { $in: product.productId.tags },
+      _id: { $ne: productId },
+    }).limit(4);
+
+    // const similarProducts = await Product.find()
+
+    res.status(200).json({
+      message: "Similar products retrieved successfully",
+      data: similarProducts,
+    });
   }
 );

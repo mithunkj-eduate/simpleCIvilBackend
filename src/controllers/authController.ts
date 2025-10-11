@@ -24,8 +24,9 @@ export const register = asyncErrorHandler(
     //   const err = new CustomError(value.error.details[0].message, 400);
     //   return next(err);
     // }
+    console.log("regitor" ,req.body)
 
-    if (req.body.role && req.body.role !== UserRole.SYSTEM_ADMIN) {
+    if (req.body.role && req.body.role === UserRole.SYSTEM_ADMIN) {
       logger.error("role is not allowed");
       res.status(400).json({
         message: "role is not allowed, only system admin can create users",
@@ -48,9 +49,9 @@ export const register = asyncErrorHandler(
       email: req.body.email,
       phoneNumber: req.body.phoneNumber,
       role: req.body.role,
-      authMethod: [req.body.AuthMethod ? req.body.AuthMethod : AuthMethod.NONE],
+      authMethod: [req.body.authMethod ? req.body.authMethod : AuthMethod.NONE],
     });
-    res.status(201).json({
+    res.status(200).json({
       title: "New user has been created",
       data: newUser,
     });

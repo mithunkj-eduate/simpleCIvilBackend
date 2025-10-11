@@ -75,3 +75,32 @@
 13:43:34  error: Name,storeId,ownerId,categoryId are required
 13:43:34  error: Name,storeId,ownerId,categoryId are required
 13:43:34  error: Name,storeId,ownerId,categoryId are required
+14:48:00  error: jwt expired
+14:48:03  error: jwt expired
+14:48:39  error: jwt expired
+14:49:02  error: jwt expired
+14:49:14  error: jwt expired
+14:49:44  error: jwt expired
+16:36:03  error: register:17 validation result
+16:36:03  error: role is not allowed
+16:37:47  error: register:17 validation result
+16:37:47  error: role is not allowed
+16:40:46  error: register:17 validation result
+16:40:46  error: role is not allowed
+16:40:46  error: register:17 validation result
+16:40:46  error: role is not allowed
+16:40:46  error: user already present
+16:40:58  error: register:17 validation result
+16:40:58  error: role is not allowed
+16:40:58  error: user already present
+16:44:20  error: register:17 validation result
+16:44:20  error: role is not allowed
+16:44:20  error: user already present
+16:47:04  error: register:17 validation result
+16:47:04  error: role is not allowed
+16:47:04  error: user already present
+16:48:15  error: register:17 validation result
+16:48:15  error: role is not allowed
+16:48:15  error: user already present
+16:52:15  error: register:17 validation result
+16:57:03  error: User not found

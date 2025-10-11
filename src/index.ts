@@ -51,6 +51,7 @@ connectDB();
 const corsOptions: cors.CorsOptions = {
   origin: [
     "http://192.168.1.3:3000",
+    "http://192.168.1.4:3000",
     "http://127.0.0.1:3000",
     "http://localhost:5173",
     "http://localhost:3000",
@@ -75,6 +76,10 @@ import User from "./models/userModel";
 import storeRoute from "./routes/storeRoute";
 import categoryRoute from "./routes/categoryRoute";
 import productRoute from "./routes/productRoute";
+import orderRoute from "./routes/orderRoute";
+import commenRoute from "./routes/commenRoute";
+import cartRoute from "./routes/cartRoute";
+import paymentRoute from "./routes/paymentRoute";
 
 // Test route
 app.get("/api", (req: Request, res: Response) => {
@@ -82,31 +87,32 @@ app.get("/api", (req: Request, res: Response) => {
 });
 
 app.use("/api/users", userRoute);
+app.use("/api/commen/products", commenRoute);
 
 // Protect routes after this middleware
 app.use(verifyToken);
 
+app.use("/api/carts", cartRoute);
 app.use("/api/stores", storeRoute);
 app.use("/api/categories", categoryRoute);
 app.use("/api/products", productRoute);
-
-
+app.use("/api/orders", orderRoute);
+app.use("/api/payments", paymentRoute);
 
 // verify user
 app.get(
   "/api/user/verify",
   asyncErrorHandler(async (req: AuthRequest, res: Response) => {
+    console.log("verify",req.user)
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized: No user found" });
     }
-    console.log("User ID:", req.user);
 
     const user = await User.findById(req.user.userId, { password: 0, __v: 0 });
-    console.log("User:", user);
 
     res.status(200).json({
       message: "User verified successfully",
-      data:user,
+      data: user,
     });
   })
 );

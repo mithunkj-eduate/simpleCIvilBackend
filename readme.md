@@ -77,7 +77,7 @@ npm run dev
 systemctl status mongod
 systemctl start mongod
 
-password: root123
+password: yoursystempassword
 
 
 
