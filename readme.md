@@ -78,6 +78,7 @@ systemctl status mongod
 systemctl start mongod
 
 password: yoursystempassword
+.
 
 
 
