@@ -8,6 +8,7 @@ import Product from "../models/productModel";
 import { ProductInput } from "../types/product";
 import { AuthRequest } from "../helpers/verifyjwt";
 import Order from "../models/orderModel";
+import { UserRole } from "../types/user";
 
 export const createProduct = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -180,10 +181,12 @@ export const getProducts2 = asyncErrorHandler(
   }
 );
 
+// Get all products
 export const getProducts = asyncErrorHandler(
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const {
+        ownerId,
         categoryId,
         storeId,
         type,
@@ -200,6 +203,16 @@ export const getProducts = asyncErrorHandler(
 
       let filterQuery: any = {};
 
+      if (
+        req.user?.role &&
+        (req.user.role === UserRole.SELLER ||
+          req.user.role === UserRole.PICE_WORKER ||
+          req.user.role === UserRole.PROJECT_MANAGER ||
+          req.user.role === UserRole.RESELLER) &&
+        ownerId
+      ) {
+        filterQuery.ownerId = { $in: (ownerId as string).split(",") };
+      }
       if (categoryId) {
         filterQuery.categoryId = { $in: (categoryId as string).split(",") };
       }
@@ -272,7 +285,6 @@ export const getProducts = asyncErrorHandler(
           sortQuery["rentalTerms.pricePerUnit"] = -1;
           break;
       }
-
 
       const products = await Product.find(filterQuery)
         .sort(sortQuery)

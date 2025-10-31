@@ -8,9 +8,10 @@ import { StoreTypes } from "../types/store";
 
 export const createStore = asyncErrorHandler(
   async (req: Request, res: Response, nexr: NextFunction) => {
-    const { name, ownerId, address, latitude,longitude, pincode }:StoreTypes = req.body;
+    const { name, ownerId, address, latitude, longitude, pincode }: StoreTypes =
+      req.body;
 
-    console.log("location 11",latitude)
+    console.log("location 11", latitude);
     if (!name || !ownerId || !address || !latitude || !longitude || !pincode) {
       return res.status(400).json({
         message: "All fields are required",
@@ -32,7 +33,7 @@ export const createStore = asyncErrorHandler(
       address,
       location: {
         type: "Point",
-        coordinates: [latitude,longitude],
+        coordinates: [latitude, longitude],
       },
       pincode,
     });
@@ -71,12 +72,12 @@ export const approvedStore = asyncErrorHandler(
       });
     }
     // update store status
-   const storeData = await Store.findByIdAndUpdate(id, {
+    const storeData = await Store.findByIdAndUpdate(id, {
       status: req.body.status,
     });
 
     res.status(200).json({
-      data:storeData,
+      data: storeData,
       message: "Store status approved successfully",
     });
   }
@@ -103,13 +104,38 @@ export const storeById = asyncErrorHandler(
 
 // get stores
 // GET
-export const stores = asyncErrorHandler(async (req: Request, res: Response) => {
-  const stores = await Store.find().populate("ownerId", "-password");
-  res.status(200).json({
-    data: stores,
-  });
-});
-
+export const stores = asyncErrorHandler(
+  async (req: AuthRequest, res: Response) => {
+    console.log(req.user?.userId,"get stores")
+    if (
+      req.user &&
+      (req.user.role === UserRole.SYSTEM_ADMIN ||
+        req.user.role === UserRole.ADMIN)
+    ) {
+      const stores = await Store.find().populate("ownerId", "-password");
+      res.status(200).json({
+        data: stores,
+      });
+    } else if (
+      req.user &&
+      (req.user.role === UserRole.SELLER ||
+        req.user.role === UserRole.PICE_WORKER ||
+        req.user.role === UserRole.PROJECT_MANAGER ||
+        req.user.role === UserRole.RESELLER)
+    ) {
+      const stores = await Store.find({ ownerId: req.user.userId }).populate(
+        "ownerId",
+        "-password"
+      );
+      res.status(200).json({
+        data: stores,
+      });
+    }
+    res.status(200).json({
+      data: null,
+    });
+  }
+);
 
 // get all stores by ownerId
 export const storesByOwnerId = asyncErrorHandler(
@@ -122,7 +148,10 @@ export const storesByOwnerId = asyncErrorHandler(
       });
     }
 
-    const stores = await Store.find({ ownerId }).populate("ownerId", "-password");
+    const stores = await Store.find({ ownerId }).populate(
+      "ownerId",
+      "-password"
+    );
 
     if (stores.length === 0) {
       return res.status(404).json({
