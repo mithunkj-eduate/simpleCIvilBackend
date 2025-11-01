@@ -48,6 +48,7 @@ const userSchema = new mongoose.Schema({
       UserRole.PROJECT_MANAGER,
       UserRole.SYSTEM_ADMIN,
       UserRole.PICE_WORKER,
+      UserRole.DELIVERY_BOY,
     ],
     default: UserRole.USER,
   },

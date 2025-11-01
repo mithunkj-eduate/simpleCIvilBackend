@@ -10,6 +10,7 @@ import Cart from "../models/cartModel";
 import Payment from "../models/paymentModel";
 import { PaymentStatus } from "../types/payment";
 import { v4 as uuidv4 } from "uuid"; // For generating transactionId
+import { UserRole } from "../types/user";
 
 export const createOrder = asyncErrorHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -80,7 +81,7 @@ export const createOrder = asyncErrorHandler(
       initialStatus = PaymentStatus.CAPTURED; // Cash is captured at order creation or delivery
     }
     console.log("Creating payment with status:", initialStatus);
-   const payment = await Payment.create({
+    const payment = await Payment.create({
       userId: user.userId,
       orderId: order._id,
       amount: totalPrice,
@@ -88,7 +89,7 @@ export const createOrder = asyncErrorHandler(
       status: initialStatus,
       transactionId: uuidv4(), // Unique transaction ID
     });
-console.log("Payment created:", payment);
+    console.log("Payment created:", payment);
 
     // Remove cart item
     const cart = await Cart.findOne({ userId: user.userId });
@@ -240,7 +241,7 @@ export const updateOrderStatus = asyncErrorHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     const orderId = req.params.id;
     const { orderStatus }: { orderStatus: OrderStatus } = req.body;
-      
+
     if (!orderId || !orderStatus) {
       return res.status(400).json({
         message: "Order ID and status are required",
@@ -319,7 +320,6 @@ export const getOrderHistory = asyncErrorHandler(
       .populate("storeId", "name address")
       .sort({ createdAt: -1 });
 
-
     res.status(200).json({
       message: "Order history retrieved successfully",
       data: orders,
@@ -327,3 +327,49 @@ export const getOrderHistory = asyncErrorHandler(
   }
 );
 
+// GET Method
+// near confromed products
+// delivery boy login only
+// "/api/delivery/orders?lat=13.028473178767564&&lng=77.63284503525036"
+export const nearByOrders = asyncErrorHandler(
+  async (req: AuthRequest, res: Response) => {
+    if (req.user && req.user.role !== UserRole.DELIVERY_BOY) {
+      res.status(401).json({ message: "Authorization header not found" });
+      return;
+    }
+    const { lat, lng } = req.query;
+
+    let filterQuery: any = {};
+
+    // Location filter (within 50 km)
+    if (lat && lng) {
+      filterQuery.location = {
+        $geoWithin: {
+          $centerSphere: [[Number(lng), Number(lat)], 50 / 6378.1],
+        },
+      };
+    }
+    const stores = await Store.find(filterQuery)
+      .sort({ createdAt: -1 })
+      .populate("ownerId", "name");
+
+    let filterOrdersQuery: any = {};
+
+    filterOrdersQuery.orderStatus = OrderStatus.CONFIRMED;
+
+    if (stores.length) {
+      filterOrdersQuery.storeId = { $in: stores.map((item) => item._id) };
+    }
+
+    const Orders = await Order.find(filterOrdersQuery)
+      .sort({ createdAt: -1 })
+      .populate("venderId productId storeId", "name");
+
+    const totalCount = await Order.countDocuments(filterOrdersQuery);
+
+    res.status(200).json({
+      data: Orders,
+      totalCount,
+    });
+  }
+);

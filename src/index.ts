@@ -80,6 +80,7 @@ import orderRoute from "./routes/orderRoute";
 import commenRoute from "./routes/commenRoute";
 import cartRoute from "./routes/cartRoute";
 import paymentRoute from "./routes/paymentRoute";
+import deliveryRoute from "./routes/deliveryRoute"
 
 // Test route
 app.get("/api", (req: Request, res: Response) => {
@@ -98,6 +99,8 @@ app.use("/api/categories", categoryRoute);
 app.use("/api/products", productRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/payments", paymentRoute);
+app.use("/api/delivery", deliveryRoute);
+
 
 // verify user
 app.get(
