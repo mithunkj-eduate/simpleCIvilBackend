@@ -202,9 +202,8 @@ export const getProducts = asyncErrorHandler(
       } = req.query;
 
       let filterQuery: any = {};
-
       if (
-        req.user?.role &&
+        req.user &&
         (req.user.role === UserRole.SELLER ||
           req.user.role === UserRole.PICE_WORKER ||
           req.user.role === UserRole.PROJECT_MANAGER ||

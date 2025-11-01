@@ -11,7 +11,6 @@ export const createStore = asyncErrorHandler(
     const { name, ownerId, address, latitude, longitude, pincode }: StoreTypes =
       req.body;
 
-    console.log("location 11", latitude);
     if (!name || !ownerId || !address || !latitude || !longitude || !pincode) {
       return res.status(400).json({
         message: "All fields are required",

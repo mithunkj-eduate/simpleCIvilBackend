@@ -5,7 +5,7 @@ import User from "../models/userModel";
 import Product from "../models/productModel";
 import Store from "../models/storeModel";
 import Order from "../models/orderModel";
-import { OrderStatus, PaymentMethod } from "../types/order";
+import { DeliveryStatus, OrderStatus, PaymentMethod } from "../types/order";
 import Cart from "../models/cartModel";
 import Payment from "../models/paymentModel";
 import { PaymentStatus } from "../types/payment";
@@ -186,7 +186,6 @@ export const getAllOrdersByFilter = asyncErrorHandler(
     } = req.query;
 
     const filter: any = {};
-
     if (venderId) filter.venderId = venderId;
     if (productId) filter.productId = productId;
     if (storeId) filter.storeId = storeId;
@@ -241,6 +240,7 @@ export const updateOrderStatus = asyncErrorHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     const orderId = req.params.id;
     const { orderStatus }: { orderStatus: OrderStatus } = req.body;
+      
     if (!orderId || !orderStatus) {
       return res.status(400).json({
         message: "Order ID and status are required",
@@ -273,7 +273,7 @@ export const updateOrderStatus = asyncErrorHandler(
 export const updateOrderDeliveryStatus = asyncErrorHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     const orderId = req.params.id;
-    const { deliveryStatus }: { deliveryStatus: string } = req.body;
+    const { deliveryStatus }: { deliveryStatus: DeliveryStatus } = req.body;
 
     if (!orderId || !deliveryStatus) {
       return res.status(400).json({
