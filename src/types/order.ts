@@ -16,3 +16,9 @@ export enum DeliveryStatus {
   DELIVERED = "DELIVERED",
   RETURNED = "RETURNED",
 }
+
+export enum DeliveryBoyOrderStatus {
+  PENDING = "PENDING",
+  ACCEPTED = "ACCEPTED",
+  CANCELLED = "CANCELLED",
+}

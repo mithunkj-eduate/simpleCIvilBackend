@@ -7,6 +7,11 @@ const orderSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  deliveryBoyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   venderId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -49,6 +54,16 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   deliveryStatus: {
+    type: String,
+    enum: [
+      DeliveryStatus.PENDING,
+      DeliveryStatus.SHIPPED,
+      DeliveryStatus.DELIVERED,
+      DeliveryStatus.RETURNED,
+    ],
+    default: DeliveryStatus.PENDING,
+  },
+  deliveryBoyStatus: {
     type: String,
     enum: [
       DeliveryStatus.PENDING,

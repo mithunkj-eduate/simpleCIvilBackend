@@ -118,6 +118,7 @@ export const getOrderById = asyncErrorHandler(
 
     const order = await Order.findById(orderId)
       .populate("buyerId", "name email phoneNumber")
+      .populate("deliveryBoyId", "name email phoneNumber")
       .populate("venderId", "name email phoneNumber")
       .populate("productId", "name price image")
       .populate("storeId", "name address");
@@ -171,10 +172,14 @@ export const getAllOrdersByFilter1 = asyncErrorHandler(
   }
 );
 
+// Get all orders
+// Get /api/orders/all?
+// filter by vender, product, store, buyer, orderStatus, deliveryStatus particlarly
 export const getAllOrdersByFilter = asyncErrorHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     const {
       venderId,
+      deliveryBoyId,
       productId,
       storeId,
       buyerId,
@@ -188,6 +193,7 @@ export const getAllOrdersByFilter = asyncErrorHandler(
 
     const filter: any = {};
     if (venderId) filter.venderId = venderId;
+    if (deliveryBoyId) filter.deliveryBoyId = deliveryBoyId;
     if (productId) filter.productId = productId;
     if (storeId) filter.storeId = storeId;
     if (buyerId) filter.buyerId = buyerId;
@@ -224,6 +230,7 @@ export const getAllOrdersByFilter = asyncErrorHandler(
       .skip(skip)
       .limit(limitNum)
       .populate("buyerId", "name email phoneNumber")
+      .populate("deliveryBoyId", "name email phoneNumber")
       .populate("venderId", "name email phoneNumber")
       .populate("productId", "name saleTerms.salePrice")
       .populate("storeId", "name address");
